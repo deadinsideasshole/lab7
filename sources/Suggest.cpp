@@ -1,6 +1,6 @@
 // Copyright 2020 ivan <ikhonyak@gmail.com>
 #include "Suggest.hpp"
-//sdfsff
+
 boost::shared_mutex m;
 json suggestions;
 
@@ -12,7 +12,6 @@ bool sortJson(json& a, json& b) {
 void write() {
   std::ifstream file("./v1/api/suggest/suggestions.json");
   boost::lock_guard<boost::shared_mutex> lk(m);
-  // suggestions.clear();
   json temp;
   try {
     file >> temp;
@@ -117,29 +116,23 @@ void handle_request(beast::string_view doc_root,
       req.target().find("..") != beast::string_view::npos)
     return send(bad_request("Illegal request-target"));
 
-  // Build the path to the requested file
   std::string path = path_cat(doc_root, req.target());
   nlohmann::json j = nlohmann::json::parse(req.body());
   json bodyOut = read(j.at("input").get<std::string>());
-  if ((req.target() == "/v1/api/suggest/") ||  //попоробовать убрать
+  if ((req.target() == "/v1/api/suggest/") ||
       (req.target() == "/v1/api/suggest"))
     path.append("suggestions.json");
 
-  // Attempt to open the file
   beast::error_code ec;
   http::file_body::value_type body;
   body.open(path.c_str(), beast::file_mode::scan, ec);
-  // Handle the case where the file doesn't exist
   if (ec == beast::errc::no_such_file_or_directory) {
     return send(not_found(req.target()));
   }
 
-  // Handle an unknown error
   if (ec) return send(server_error(ec.message()));
 
-  // Cache the size since we need it after the move
   auto const size = body.size();
-  // Respond to POST request
   http::response<http::string_body> res{http::status::ok, req.version()};
   res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
   res.set(http::field::content_type, "application/json");
@@ -161,12 +154,7 @@ struct send_lambda {
 
   template <bool isRequest, class Body, class Fields>
   void operator()(http::message<isRequest, Body, Fields>&& msg) const {
-    // Determine if we should close the connection after
     close_ = msg.need_eof();
-
-    // We need the serializer here because the serializer requires
-    // a non-const file_body, and the message oriented version of
-    // http::write only works with const messages.
     http::serializer<isRequest, Body, Fields> sr{msg};
     http::write(stream_, sr, ec_);
   }
@@ -219,7 +207,7 @@ int Server::startServer(int argc, char* argv[]) {
     clock_t beginTime = clock();
 
     std::thread{std::bind(&update, beginTime)}
-        .detach();  // detach -открепляет поток. Если не нужно вернуть значение
+        .detach();
 
     for (;;) {
       tcp::socket socket{ioc};
