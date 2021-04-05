@@ -1,25 +1,25 @@
-// Copyright 2020 Dolbnin Mikhail dolbnin@protonmail.com
+// Copyright 2020 ivan <ikhonyak@gmail.com>
 
+#include <algorithm>
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/version.hpp>
 #include <boost/bind.hpp>
-#include <ctime>
-#include <iostream>
-#include <vector>
-#include <utility>
-#include <thread>
 #include <boost/thread.hpp>
-#include <nlohmann/json.hpp>
-#include <sstream>
-#include <string>
-#include <algorithm>
+#include <ctime>
 #include <fstream>
+#include <iostream>
 #include <memory>
 #include <mutex>
+#include <nlohmann/json.hpp>
 #include <shared_mutex>
+#include <sstream>
+#include <string>
+#include <thread>
+#include <utility>
+#include <vector>
 
 namespace beast = boost::beast;    // from <boost/beast.hpp>
 namespace http = beast::http;      // from <boost/beast/http.hpp>
@@ -34,11 +34,10 @@ class Server {
  public:
   Server();
   int startServer(int argc, char* argv[]);
+
  private:
   uint16_t port;
   std::shared_ptr<std::string> doc_root;
 };
-
-
 
 #endif  // INCLUDE_SUGGEST_HPP_

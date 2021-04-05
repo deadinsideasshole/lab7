@@ -1,7 +1,6 @@
-// Copyright 2020 Dolbnin Mikhail dolbnin@protonmail.com
-
+// Copyright 2020 ivan <ikhonyak@gmail.com>
 #include "Suggest.hpp"
-
+//sdfsff
 boost::shared_mutex m;
 json suggestions;
 
@@ -122,7 +121,7 @@ void handle_request(beast::string_view doc_root,
   std::string path = path_cat(doc_root, req.target());
   nlohmann::json j = nlohmann::json::parse(req.body());
   json bodyOut = read(j.at("input").get<std::string>());
-  if ((req.target() == "/v1/api/suggest/") ||
+  if ((req.target() == "/v1/api/suggest/") ||  //попоробовать убрать
       (req.target() == "/v1/api/suggest"))
     path.append("suggestions.json");
 
@@ -204,10 +203,9 @@ void do_session(tcp::socket& socket,
 int Server::startServer(int argc, char* argv[]) {
   try {
     if (argc != 4) {
-      std::cerr
-        << "\nUsage: http-server-sync <address> <port> <doc_root>\n"
-        << "Example:\n"
-        << "    http-server-sync 0.0.0.0 8080 .\n";
+      std::cerr << "\nUsage: http-server-sync <address> <port> <doc_root>\n"
+                << "Example:\n"
+                << "    http-server-sync 0.0.0.0 8080 .\n";
       return EXIT_FAILURE;
     }
 
@@ -220,14 +218,14 @@ int Server::startServer(int argc, char* argv[]) {
 
     clock_t beginTime = clock();
 
-    std::thread{std::bind(&update, beginTime)}.detach();
+    std::thread{std::bind(&update, beginTime)}
+        .detach();  // detach -открепляет поток. Если не нужно вернуть значение
 
     for (;;) {
       tcp::socket socket{ioc};
       acceptor.accept(socket);
 
-      std::thread{std::bind(&do_session, std::move(socket),
-                            doc_root)}.detach();
+      std::thread{std::bind(&do_session, std::move(socket), doc_root)}.detach();
     }
   } catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
