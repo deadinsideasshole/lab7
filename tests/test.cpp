@@ -1,4 +1,4 @@
-// Copyright 2020 ivan <ikhonyak@gmail.com>
+// Copyright 2021 Roman <Roman.sekin@mail.ru>
 
 #include <gtest/gtest.h>
 
